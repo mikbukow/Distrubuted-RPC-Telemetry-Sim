@@ -1,4 +1,9 @@
 import socket
+import json
+import uuid
+import time
+
+from telemetry import build_telemetry, build_disconnect
 
 
 HEADER = 64
@@ -7,6 +12,7 @@ SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+NODE_ID = str(uuid.uuid4())
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,8 +26,12 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
-send("Hello World!")
-send("Hello hi!")
-send("Hello hwat!")
-send("Hello mik!")
-send(DISCONNECT_MESSAGE)
+countdown = 10
+while countdown > 0:
+    telemetry = build_telemetry(NODE_ID)
+    send(json.dumps(telemetry))
+    time.sleep(5)
+    countdown -= 1
+
+telemetry = build_disconnect(NODE_ID)
+send(json.dumps(telemetry))

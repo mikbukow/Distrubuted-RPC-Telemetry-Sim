@@ -1,5 +1,7 @@
 import socket
 import threading
+import json
+from node_manager import NodeManager
 
 HEADER = 64
 PORT = 5050
@@ -8,9 +10,10 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 
+#TCP socket server 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
-
+nodes = NodeManager()
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -22,8 +25,17 @@ def handle_client(conn, addr):
             msg_length = int(msg_length)
             msg = conn.recv(msg_length).decode(FORMAT)
             print(f"[{addr}] {msg}")
-            if msg == DISCONNECT_MESSAGE:
+            try:
+                data = json.loads(msg)
+            except json.JSONDecodeError:
+                print(f'[ERROR] bad json from {addr}: {msg}')
+                continue
+            
+            if data.get("type") == 'disconnect':
                 connected = False
+                continue
+
+            nodes.update_node(data['node_id'], data)
     
     conn.close()
 
