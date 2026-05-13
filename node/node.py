@@ -2,6 +2,7 @@ import socket
 import json
 import uuid
 import time
+import random
 
 from telemetry import build_telemetry, build_disconnect, build_heartbeat
 
@@ -17,6 +18,17 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 NODE_ID = str(uuid.uuid4())
+
+failure_roll = random.random()
+
+if failure_roll < 0.01:
+    FAILURE_MODE = "crash"
+elif failure_roll < 0.03:
+    FAILURE_MODE = "silent"
+elif failure_roll < 0.06:
+    FAILURE_MODE = "network_drop"
+else:
+    FAILURE_MODE = "none"
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -37,6 +49,25 @@ try:
     while running:
         now = time.time()
 
+        # ------ FAILURE CHECKS -------- 
+        #simulating random disconnect
+        if FAILURE_MODE == "crash":
+            print("[NODE] Simulated crash/disconnect")
+            client.close()
+            break
+
+        if FAILURE_MODE == "silent":
+            print("[NODE] silent failure")
+            while True:
+                time.sleep(1000)
+
+        if FAILURE_MODE == "network_drop":
+            print("[NODE] network drop")
+            client.shutdown(socket.SHUT_RDWR)
+            client.close()
+            break
+
+        # -------------------------------
         # send heartbeat
         if now - last_heartbeat >= HEARTBEAT_INTERVAL:
             heartbeat = build_heartbeat(NODE_ID)
@@ -48,8 +79,12 @@ try:
             telemetry = build_telemetry(NODE_ID)
             send(json.dumps(telemetry))
             last_telemetry = now
-        
-        time.sleep(0.1)  # small sleep to avoid CPU spin
+
+        # packet loss simulation
+        if FAILURE_MODE == "drop" and random.random() < 0.2:
+            continue
+
+        time.sleep(0.1) # small sleep to avoid CPU spin
 
 
 except KeyboardInterrupt:
