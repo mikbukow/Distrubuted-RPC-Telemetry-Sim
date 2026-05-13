@@ -3,8 +3,12 @@ import json
 import uuid
 import time
 
-from telemetry import build_telemetry, build_disconnect
+from telemetry import build_telemetry, build_disconnect, build_heartbeat
 
+last_telemetry = 0
+last_heartbeat = 0
+TELEMETRY_INTERVAL = 10
+HEARTBEAT_INTERVAL = 2
 
 HEADER = 64
 PORT = 5050
@@ -26,12 +30,32 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
-countdown = 10
-while countdown > 0:
-    telemetry = build_telemetry(NODE_ID)
-    send(json.dumps(telemetry))
-    time.sleep(5)
-    countdown -= 1
+try:
 
-telemetry = build_disconnect(NODE_ID)
-send(json.dumps(telemetry))
+    running = True
+
+    while running:
+        now = time.time()
+
+        # send heartbeat
+        if now - last_heartbeat >= HEARTBEAT_INTERVAL:
+            heartbeat = build_heartbeat(NODE_ID)
+            send(json.dumps(heartbeat))
+            last_heartbeat = now
+
+        # send telemetry
+        if now - last_telemetry >= TELEMETRY_INTERVAL:
+            telemetry = build_telemetry(NODE_ID)
+            send(json.dumps(telemetry))
+            last_telemetry = now
+        
+        time.sleep(0.1)  # small sleep to avoid CPU spin
+
+
+except KeyboardInterrupt:
+    running = False
+    telemetry = build_disconnect(NODE_ID)
+    send(json.dumps(telemetry))
+
+finally:
+    client.close()
