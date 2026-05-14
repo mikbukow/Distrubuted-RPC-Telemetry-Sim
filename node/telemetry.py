@@ -1,5 +1,5 @@
 import time
-from node.sensor import read_sensor
+from sensor import read_sensor
 
 def build_telemetry(node_id):
     return {

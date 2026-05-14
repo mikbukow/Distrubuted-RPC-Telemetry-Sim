@@ -4,7 +4,7 @@ import uuid
 import time
 import random
 
-from node.telemetry import build_telemetry, build_disconnect, build_heartbeat
+from telemetry import build_telemetry, build_disconnect, build_heartbeat
 
 last_telemetry = 0
 last_heartbeat = 0
