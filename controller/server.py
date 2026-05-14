@@ -6,8 +6,9 @@ from controller.shared_state import nodes
 
 HEADER = 64
 PORT = 5050
-SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
-ADDR = (SERVER, PORT)
+#SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
+#ADDR = (SERVER, PORT)
+ADDR = ("0.0.0.0", PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 HEARTBEAT_TIMEOUT = 10 
@@ -59,7 +60,7 @@ def monitor_nodes():
 
 def start():
     server.listen()
-    print(f"[LISTENING] Server is listening on {SERVER}")
+    print(f"[LISTENING] Server is listening on 0.0.0.0:{PORT}")
     while True:
         conn, addr = server.accept() # this is blocking
         thread = threading.Thread(target=handle_client, args=(conn, addr))
