@@ -2,7 +2,7 @@ import socket
 import threading
 import json
 import time
-from node_manager import NodeManager
+from controller.shared_state import nodes
 
 HEADER = 64
 PORT = 5050
@@ -15,7 +15,6 @@ HEARTBEAT_TIMEOUT = 10
 #TCP socket server 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
-nodes = NodeManager()
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -68,12 +67,3 @@ def start():
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
 
-print("[STARTING] server is starting ... ")
-
-monitor_thread = threading.Thread(
-    target=monitor_nodes,
-    daemon=True
-)
-
-monitor_thread.start()
-start()
