@@ -1,9 +1,7 @@
 import random
 import time
-import board
-import busio
-from adafruit_bme280 import basic as adafruit_bme280
-
+import smbus2
+import bme280
 
 #TODO: check if sensor connected, if not use random numbers
 # def read_sensor():
@@ -14,20 +12,24 @@ from adafruit_bme280 import basic as adafruit_bme280
 #         "pressure": random.randint(5, 90)
 #     }
 
+# BME280 sensor address 
+address = 0x77
 
 # Create I2C bus
-i2c = busio.I2C(board.SCL, board.SDA)
+bus = smbus2.SMBus(1)
 
-# Create sensor object
-bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x77)
+# Load calibration parameters
+calibration_params = bme280.load_calibration_params(bus, address)
+
 
 def convert_celsius(celsius):
     return (celsius * 9/5) + 32
 
 def read_sensor():
-    temperature_c = bme280.temperature
-    humidity = bme280.humidity
-    pressure = bme280.pressure
+    data = bme280.sample(bus, address, calibration_params)
+    temperature_c = data.temperature
+    humidity = data.humidity
+    pressure = data.pressure
     temperature_f = convert_celsius(temperature_c)
 
     return {
