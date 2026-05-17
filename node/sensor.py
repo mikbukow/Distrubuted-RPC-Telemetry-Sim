@@ -38,10 +38,3 @@ def read_sensor():
         "humidity": humidity,
         "pressure": pressure
     }
-
-
-print(read_sensor)
-
-
-
-
