@@ -38,5 +38,8 @@ def read_sensor():
     }
 
 
+print(read_sensor)
+
+
 
 
