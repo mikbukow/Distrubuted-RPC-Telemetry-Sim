@@ -15,8 +15,10 @@ export default function NodeCard({ node }: Props) {
 
       {node.latest.metrics && (
         <>
-          <p>CPU: {node.latest.metrics.cpu_usage}</p>
-          <p>Temp: {node.latest.metrics.temperature}</p>
+          <p>Temp (F): {node.latest.metrics.temperature_f}</p>
+          <p>Temp (C): {node.latest.metrics.temperature_c}</p>
+          <p>Humidity: {node.latest.metrics.humidity}</p>
+          <p>Pressure: {node.latest.metrics.pressure}</p>
         </>
       )}
     </div>

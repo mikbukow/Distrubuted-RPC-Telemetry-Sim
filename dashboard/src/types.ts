@@ -1,6 +1,8 @@
 export interface Metrics {
-    cpu_usage: number;
-    temperature: number;
+    temperature_f: number;
+    temperature_c: number;
+    humidity: number;
+    pressure: number;
 }
 
 export interface NodeMessage {
