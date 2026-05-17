@@ -8,7 +8,7 @@ from telemetry import build_telemetry, build_disconnect, build_heartbeat
 
 last_telemetry = 0
 last_heartbeat = 0
-TELEMETRY_INTERVAL = 10
+TELEMETRY_INTERVAL = 5
 HEARTBEAT_INTERVAL = 2
 
 HEADER = 64
