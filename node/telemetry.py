@@ -6,7 +6,9 @@ def build_telemetry(node_id):
         "type": "telemetry",
         "node_id": node_id,
         "timestamp": time.time(),
-        **read_sensor()
+        "metrics": {
+         **read_sensor()
+        }
     }
 
 def build_disconnect(node_id):

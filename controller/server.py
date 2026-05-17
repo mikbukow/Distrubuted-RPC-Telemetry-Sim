@@ -2,12 +2,13 @@ import socket
 import threading
 import json
 import time
-from node_manager import NodeManager
+from controller.shared_state import nodes
 
 HEADER = 64
 PORT = 5050
-SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
-ADDR = (SERVER, PORT)
+#SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
+#ADDR = (SERVER, PORT)
+ADDR = ("0.0.0.0", PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 HEARTBEAT_TIMEOUT = 10 
@@ -15,7 +16,6 @@ HEARTBEAT_TIMEOUT = 10
 #TCP socket server 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
-nodes = NodeManager()
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
@@ -60,7 +60,7 @@ def monitor_nodes():
 
 def start():
     server.listen()
-    print(f"[LISTENING] Server is listening on {SERVER}")
+    print(f"[LISTENING] Server is listening on 0.0.0.0:{PORT}")
     while True:
         conn, addr = server.accept() # this is blocking
         thread = threading.Thread(target=handle_client, args=(conn, addr))
@@ -68,12 +68,3 @@ def start():
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
 
-print("[STARTING] server is starting ... ")
-
-monitor_thread = threading.Thread(
-    target=monitor_nodes,
-    daemon=True
-)
-
-monitor_thread.start()
-start()

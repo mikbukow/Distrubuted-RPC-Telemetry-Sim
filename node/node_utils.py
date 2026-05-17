@@ -13,7 +13,7 @@ HEARTBEAT_INTERVAL = 2
 
 HEADER = 64
 PORT = 5050
-SERVER = socket.gethostbyname(socket.gethostname()) # gets local ipv4 address
+SERVER = "192.168.1.7"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
